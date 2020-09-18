@@ -1,0 +1,10 @@
+{
+  "port": 8084,
+  "servers": [
+    {
+      "name": "Localhost",
+      "host": "localhost",
+      "port": 5900
+    }
+  ]
+}
