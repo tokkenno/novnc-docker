@@ -25,14 +25,14 @@ type Config struct {
 
 func ReadConfigFile() (Config, error) {
 	var config Config
-	configPath := "config.json"
+	configPath := "manager.json"
 
 	if _, err := os.Stat(configPath); err != nil {
-		configPath = path.Join("/etc", "novnc", "manager.json")
+		configPath, _ = os.UserConfigDir()
+		configPath = path.Join(configPath, "novnc", "manager.json")
 
 		if _, err := os.Stat(configPath); err != nil {
-			configPath, _ = os.UserConfigDir()
-			configPath = path.Join(configPath, "novnc", "manager.json")
+			configPath = path.Join("/etc", "novnc", "manager.json")
 
 			if _, err := os.Stat(configPath); err != nil {
 				return config, err
