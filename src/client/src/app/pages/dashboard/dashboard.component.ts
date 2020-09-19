@@ -25,18 +25,15 @@ export class DashboardComponent implements OnInit {
   ngOnInit(): void {
     this.http.get<ServerConfig[]>('/servers').subscribe((servers) => {
       this.servers = servers;
-      this.servers.push({name: 'Brave 2', host: 'localhost', port: 6756, proxy: '/ws/d'});
-      this.servers.push({name: 'Brave 3', host: 'localhost', port: 6756, proxy: '/ws/d'});
-      this.servers.push({name: 'Brave 4', host: 'localhost', port: 6756, proxy: '/ws/d'});
-      this.servers.push({name: 'Brave 5', host: 'localhost', port: 6756, proxy: '/ws/d'});
       this.loadError = null;
     }, (error) => {
       console.error('Load error:', error);
+      this.servers = [];
       this.loadError = 'Unknown load error';
     });
   }
 
-  getUrl(server: ServerConfig) {
+  getUrl(server: ServerConfig): string {
     const params: string[] = [];
     if (server.proxy != null && server.proxy.length > 0) {
       if (server.proxy.startsWith('/')) {
