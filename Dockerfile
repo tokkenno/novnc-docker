@@ -1,10 +1,14 @@
-FROM golang:1.15 as server
+FROM alpine:3.12 as server
+
+RUN apk add --no-cache go
 
 WORKDIR /build
 COPY src /build
 RUN CGO_ENABLED=0 GOOS=$(echo $TARGETPLATFORM| cut -d'/' -f 1) GOARCH=$(echo $TARGETPLATFORM| cut -d'/' -f 2) go build -a -installsuffix cgo -ldflags="-w -s" -o /build/novnc-manager
 
-FROM node:12 as client
+FROM alpine:3.12 as client
+
+RUN apk add --no-cache git nodejs npm
 
 RUN npm install -g webpack-cli @angular/cli
 
@@ -18,12 +22,12 @@ RUN git clone --branch v1.2.0 https://github.com/novnc/noVNC.git novnc
 WORKDIR /build/novnc
 RUN npm install && ./utils/use_require.js --with-app --as commonjs
 
-FROM alpine:latest as runtime
+FROM alpine:3.12 as runtime
 
 RUN mkdir -p /app/novnc && mkdir -p /app/client
 COPY --from=server /build/novnc-manager /app/novnc-manager
-COPY --from=client /build/client/dist/* /app/client/
-COPY --from=client /build/novnc/* /app/novnc/
+COPY --from=client /build/client/dist/client /app/client/
+COPY --from=client /build/novnc/build /app/novnc/
 
 WORKDIR /app
 EXPOSE 8084
